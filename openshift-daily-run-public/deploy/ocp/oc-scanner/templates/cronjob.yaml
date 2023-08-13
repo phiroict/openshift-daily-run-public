@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  creationTimestamp: null
+  name: daily-scan
+spec:
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+      name: {{ .Values.fullnameOverride }}
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+          namespace: {{ .Values.namespace }}
+        spec:
+          serviceAccountName: {{ include "oc-scanner.serviceAccountName" . }}
+          containers:
+          - image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            name: daily-scan
+            resources: {}
+          restartPolicy: OnFailure
+
+  schedule: 0 * * * *
+status: {}

@@ -1,0 +1,4 @@
+*.tgz
+*.idea/
+*.iml
+secret*
