@@ -1,3 +1,4 @@
+# TODO: - Script user other than root, redhat source image, download hash checks.
 FROM archlinux:base-20230723.0.166908
 ########################################################################################################################
 # Upgrade OS to the latest versions
