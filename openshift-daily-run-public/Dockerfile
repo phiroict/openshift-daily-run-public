@@ -1,4 +1,3 @@
-# TODO: - Script user other than root, redhat source image, download hash checks.
 FROM archlinux:base-20230723.0.166908
 ########################################################################################################################
 # Upgrade OS to the latest versions
@@ -9,6 +8,7 @@ RUN pacman -S --needed --noconfirm base-devel git go fakeroot wget
 ########################################################################################################################
 # Create a user we can run the builders from
 RUN useradd -m -g users builder
+RUN useradd -m -g users runner
 RUN echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 ########################################################################################################################
 ## Install tools #######################################################################################################
@@ -29,11 +29,16 @@ RUN mv ./* /usr/local/bin/
 RUN yes | sudo -u builder yay -S dotnet-install --save --answerclean No --answerdiff No
 RUN dotnet-install
 ## Move tools into the paths to be used or set environments to use the components  #####################################
-ENV DOTNET_ROOT=/root/.dotnet
+ 
+RUN mv /root/.dotnet /home/runner
+RUN chown -R runner /home/runner/.dotnet
+ENV DOTNET_ROOT=/home/runner/.dotnet
 RUN pwsh --version
 #  Copy over scripts for the daily scripts #############################################################################
 RUN mkdir -p /scripts
 WORKDIR /scripts
 COPY scripts/* .
+RUN chown -R runner /scripts
 # Default running container, can be overridden #########################################################################
+USER runner
 CMD ["pwsh", "./get-node-info.ps1"]
